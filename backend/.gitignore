@@ -1,0 +1,9 @@
+node_modules/
+data/*.db
+data/*.sqlite
+certs/*.key
+certs/*.crt
+certs/*.pem
+.env
+.env.test
+coverage/
