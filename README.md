@@ -121,9 +121,13 @@ npm run build
 - Staff actions update the shared database so customer status badges reflect `Verified` or `Rejected` in real time.
 - Staff use the "Submit to SWIFT" control to record that verified payments have been forwarded downstream (integration stubbed for now, Future updates).
 
-## Runtime Hardening 
+## Future Runtime Hardening 
 
 - Protect the API behind a WAF or API gateway with additional DDoS safeguards.
 - Store secrets in a vault service (Azure Key Vault, AWS Secrets Manager, HashiCorp Vault) instead of `.env` files.
 - Enable MongoDB encryption at rest, restrict network ingress to trusted CIDRs, and schedule secure point-in-time backups of the cluster.
 - Monitor logs for repeated authentication failures and integrate alerts with your SIEM.
+
+## YouTube Link
+
+- https://youtu.be/LcZwnxqDG4c?si=pu4kwPPyZ_n18nWX
