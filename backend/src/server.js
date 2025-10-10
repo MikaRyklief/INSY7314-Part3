@@ -25,6 +25,7 @@ const startServer = async () => {
 
   const app = createApp();
 
+  // Enforce TLS-only transport to reduce man-in-the-middle exposure
   const sslOptions = {
     key: readFileIfExists(config.ssl.keyPath),
     cert: readFileIfExists(config.ssl.certPath),

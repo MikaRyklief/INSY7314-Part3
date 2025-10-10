@@ -16,8 +16,10 @@ export const createApp = () => {
   const app = express();
 
   app.set('trust proxy', 1);
+  app.disable('x-powered-by'); // Hide framework hint to reduce reconnaissance value
 
   const defaultDirectives = helmet.contentSecurityPolicy.getDefaultDirectives();
+  // Strict CSP and frame isolation block clickjacking while limiting third-party script execution
   const contentSecurityPolicy = {
     ...defaultDirectives,
     'default-src': ["'self'"],
@@ -30,6 +32,7 @@ export const createApp = () => {
     contentSecurityPolicy: {
       directives: contentSecurityPolicy
     },
+    crossOriginEmbedderPolicy: false, // Disable to avoid breaking Vite dev server while keeping CSP hardened
     referrerPolicy: { policy: 'no-referrer' },
     crossOriginResourcePolicy: { policy: 'same-origin' }
   }));
@@ -41,7 +44,7 @@ export const createApp = () => {
     legacyHeaders: false
   });
 
-  app.use(rateLimiter);
+  app.use(rateLimiter); // Throttle bursts to mitigate basic DDoS attempts
   app.use(hpp());
   app.use(cors({
     origin(origin, callback) {
@@ -51,6 +54,7 @@ export const createApp = () => {
       }
       callback(new Error('CORS policy violation'), false);
     },
+    // Restrict credentialed cross-origin requests to trusted portals only
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'X-CSRF-Token']

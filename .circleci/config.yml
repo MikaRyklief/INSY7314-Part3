@@ -1,0 +1,68 @@
+version: 2.1
+
+jobs:
+  backend_security:
+    docker:
+      - image: cimg/node:18.20
+    working_directory: ~/project
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-backend-{{ checksum "backend/package-lock.json" }}
+            - v1-backend-
+      - run:
+          name: Install backend dependencies
+          command: |
+            cd backend
+            npm ci
+      - save_cache:
+          key: v1-backend-{{ checksum "backend/package-lock.json" }}
+          paths:
+            - backend/node_modules
+      - run:
+          name: Backend lint
+          command: |
+            cd backend
+            npm run lint
+      - run:
+          name: Backend security scan
+          command: |
+            cd backend
+            npm run security-scan
+
+  frontend_checks:
+    docker:
+      - image: cimg/node:18.20
+    working_directory: ~/project
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-frontend-{{ checksum "frontend/package-lock.json" }}
+            - v1-frontend-
+      - run:
+          name: Install frontend dependencies
+          command: |
+            cd frontend
+            npm ci
+      - save_cache:
+          key: v1-frontend-{{ checksum "frontend/package-lock.json" }}
+          paths:
+            - frontend/node_modules
+      - run:
+          name: Frontend lint
+          command: |
+            cd frontend
+            npm run lint
+      - run:
+          name: Frontend build
+          command: |
+            cd frontend
+            npm run build
+
+workflows:
+  build_and_secure:
+    jobs:
+      - backend_security
+      - frontend_checks

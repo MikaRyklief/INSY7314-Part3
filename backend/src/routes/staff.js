@@ -19,6 +19,7 @@ import {
 
 const router = express.Router();
 
+// Employee session cookie mirrors customer protections to reduce session-jacking risk
 const EMPLOYEE_COOKIE_OPTIONS = {
   httpOnly: true,
   secure: config.security.cookieSecure,

@@ -9,6 +9,7 @@ import { requireCustomerAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
+// Lock customer session cookie against theft via HTTP-only and strict SameSite policies
 const ISSUE_COOKIE_OPTIONS = {
   httpOnly: true,
   secure: config.security.cookieSecure,

@@ -109,6 +109,7 @@ const seedEmployees = async (employeesCollection) => {
   await employeesCollection.bulkWrite(operations, { ordered: false });
 };
 
+// Hardening indexes enforce uniqueness and fast lookup to resist injection-style abuse
 const ensureIndexesAndSeed = async () => {
   const customers = getCollection('customers');
   const payments = getCollection('payments');
