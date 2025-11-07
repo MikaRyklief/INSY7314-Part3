@@ -102,6 +102,17 @@ jobs:
             host_url="${SONAR_HOST_URL:-https://sonarcloud.io}"
             organization="${SONAR_ORGANIZATION:-$(grep -E '^sonar\.organization=' sonar-project.properties | cut -d'=' -f2)}"
 
+                        if [ -n "${organization}" ] && [ -n "${project_key}" ]; then
+              prefix="${organization}_"
+              case "${project_key}" in
+                "${prefix}"*)
+                  ;; # already prefixed
+                *)
+                  project_key="${prefix}${project_key}"
+                  ;;
+              esac
+            fi
+
             if [ -z "${SONAR_TOKEN}" ]; then
               echo "❌ SONAR_TOKEN is required for authentication. Configure it in CircleCI or supply it when running locally." >&2
               exit 1
