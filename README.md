@@ -93,7 +93,7 @@ The CircleCI pipeline (`.circleci/config.yml`) runs on every push:
 
 1. Installs backend dependencies with `npm ci`, lints the API, runs automated API smoke tests, and executes `npm run security-scan` (`npm audit --audit-level=high`).
 2. Installs frontend dependencies, runs ESLint, and builds the React application.
-3. Executes a SonarQube scan (`sonar-scanner`) to surface hotspots and code smells (configure `SONAR_TOKEN`, `SONAR_HOST_URL`, and `SONAR_PROJECT_KEY` in CircleCI project settings).
+3. Executes a SonarQube scan (`sonar-scanner`) to surface hotspots and code smells. Provide a `SONAR_TOKEN` (and optionally override `SONAR_HOST_URL` and `SONAR_PROJECT_KEY`) in CircleCI project settings so the job can authenticate against your SonarQube server.
 
 ### First-time setup
 
@@ -117,6 +117,39 @@ npm install
 npm run lint
 npm run build
 ```
+
+### Testing the Sonar scan job locally
+
+The Sonar job now installs Node.js on demand before executing `npm ci`. To test
+this flow (and the scan itself) without waiting on CircleCI:
+
+1. [Install the CircleCI CLI](https://circleci.com/docs/local-cli/) and sign in
+   with the same account that runs your pipelines.
+2. Create a local environment file with your SonarQube credentials. For SonarCloud:
+   ```bash
+   cat <<'EOF' > .circleci/sonar.env
+   SONAR_TOKEN=<token-from-sonar>
+   SONAR_HOST_URL=https://sonarcloud.io    # optional, defaults to sonarcloud.io
+   # SONAR_PROJECT_KEY=override-if-you-do-not-want-to-use sonar-project.properties
+   EOF
+   ```
+   Keep this file out of version control—`git` already ignores everything under
+   `.circleci/*.env`.
+3. From the repo root, validate the pipeline definition:
+   ```bash
+   circleci config validate
+   ```
+4. Execute the Sonar job locally. The CLI spins up the same docker image used in
+   CI, installs Node.js, runs the `npm ci` steps for both workspaces, and then
+   launches `sonar-scanner`:
+   ```bash
+   circleci local execute --job sonar_scan --env-file .circleci/sonar.env
+   ```
+   Expect to see `npm` installed the first time the job runs. Subsequent runs reuse the cached installation.
+
+If you only need to confirm that Node.js is available, trigger the job and stop
+it after the `Ensure Node.js and npm are available` step completes—the logs will
+print the installed version immediately after the download finishes.
 
 ## Operational Notes
 
