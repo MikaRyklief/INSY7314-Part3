@@ -114,11 +114,14 @@ const seedCustomers = async (customersCollection) => {
         accountNumber: customer.accountNumber
       },
       update: {
-        $setOnInsert: {
+        $set: {
           fullName: customer.fullName,
           idNumber: customer.idNumber,
           accountNumber: customer.accountNumber,
           passwordHash: customer.passwordHash,
+          updatedAt: new Date()
+        },
+        $setOnInsert: {
           createdAt: new Date()
         }
       },
@@ -138,11 +141,14 @@ const seedEmployees = async (employeesCollection) => {
     updateOne: {
       filter: { employeeId: employee.employeeId },
       update: {
-        $setOnInsert: {
+        $set: {
           fullName: employee.fullName,
           employeeId: employee.employeeId,
           searchEmployeeId: employee.employeeId.toUpperCase(),
           passwordHash: employee.passwordHash,
+          updatedAt: new Date()
+        },
+        $setOnInsert: {
           createdAt: new Date()
         }
       },
